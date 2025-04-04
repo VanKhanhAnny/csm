@@ -33,8 +33,12 @@ def watermark(
     watermark_key: list[int],
 ) -> tuple[torch.Tensor, int]:
     audio_array_44khz = torchaudio.functional.resample(audio_array, orig_freq=sample_rate, new_freq=44100)
-    encoded, _ = watermarker.encode_wav(audio_array_44khz, 44100, watermark_key, calc_sdr=False, message_sdr=36)
-
+    
+    audio_numpy = audio_array_44khz.detach().cpu().numpy()
+    encoded_numpy, _ = watermarker.encode_wav(audio_numpy, 44100, watermark_key, calc_sdr=False, message_sdr=36)
+    
+    encoded = torch.tensor(encoded_numpy, device=audio_array.device)
+    
     output_sample_rate = min(44100, sample_rate)
     encoded = torchaudio.functional.resample(encoded, orig_freq=44100, new_freq=output_sample_rate)
     return encoded, output_sample_rate

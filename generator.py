@@ -116,7 +116,7 @@ class Generator:
         topk: int = 50,
     ) -> torch.Tensor:
         self._model.reset_caches()
-
+        
         max_generation_len = int(max_audio_length_ms / 80)
         tokens, tokens_mask = [], []
         for segment in context:
